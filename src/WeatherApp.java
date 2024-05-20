@@ -22,7 +22,7 @@ public class WeatherApp {
         }
 
         // build API request URL with location coordinates
-        String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0001-001?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&WeatherElement=Weather,WindDirection,WindSpeed,AirTemperature&GeoInfo=CountyName,TownName";
+        String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&WeatherElement=Weather,Now,WindSpeed,AirTemperature&GeoInfo=CountyName,TownName";
 
         try{
             // call api and get response
@@ -55,27 +55,50 @@ public class WeatherApp {
             // Get the 'Station' array from the 'records' object
             JSONArray stations = (JSONArray) records.get("Station");
 
-            // Iterate through
-            for (Object stationObj : stations) {
-                JSONObject station = (JSONObject) stationObj;
-                JSONObject geoInfo = (JSONObject) station.get("GeoInfo");
-                String countyName = geoInfo.get("CountyName").toString();
-                String townName = geoInfo.get("TownName").toString();
+            if (locationName.length()>=6) {
+                for (Object stationObj : stations) {
+                    JSONObject station = (JSONObject) stationObj;
+                    JSONObject geoInfo = (JSONObject) station.get("GeoInfo");
+                    String countyName = geoInfo.get("CountyName").toString();
+                    String townName = geoInfo.get("TownName").toString();
 
-                if (locationName.substring(0, 3).equals(countyName) && locationName.substring(locationName.length() - 3).equals(townName)) {
-                    //String stationName = station.get("locationName").toString();
+                    if (locationName.substring(0, 3).equals(countyName) && locationName.substring(locationName.length() - 3).equals(townName)) {
+                        //String stationName = station.get("locationName").toString();
+                        JSONObject weather = (JSONObject) station.get("WeatherElement");
+                        String weatherCondition = weather.get("Weather").toString();
+                        JSONObject nowHumidity = (JSONObject) weather.get("Now");
+                        double humidity = (double) nowHumidity.get("Precipitation");
+                        double windSpeed = (double) weather.get("WindSpeed");
+                        double airTemperature = (double) weather.get("AirTemperature");
+                        // build the weather json data object that we are going to access in our frontend
+                        JSONObject weatherData = new JSONObject();
+                        weatherData.put("temperature", airTemperature);
+                        weatherData.put("weather_condition", weatherCondition);
+                        weatherData.put("humidity", humidity);
+                        weatherData.put("windspeed", windSpeed);
+                        //System.out.println("OKKKKK");
+                        return weatherData;
+                    }
+                }
+            }
+            for (Object stationObj : stations){
+                JSONObject station = (JSONObject) stationObj;
+                String stationName = station.get("StationName").toString();
+                if(locationName.substring(0, 2).equals(stationName)) {
+                    System.out.println("OKKKKK");
                     JSONObject weather = (JSONObject) station.get("WeatherElement");
                     String weatherCondition = weather.get("Weather").toString();
-                    String windDirection = weather.get("WindDirection").toString();
-                    double windSpeed = (double)weather.get("WindSpeed");
-                    double airTemperature =(double) weather.get("AirTemperature");
+                    JSONObject nowHumidity = (JSONObject) weather.get("Now");
+                    double humidity = (double) nowHumidity.get("Precipitation");
+                    double windSpeed = (double) weather.get("WindSpeed");
+                    double airTemperature = (double) weather.get("AirTemperature");
                     // build the weather json data object that we are going to access in our frontend
                     JSONObject weatherData = new JSONObject();
                     weatherData.put("temperature", airTemperature);
                     weatherData.put("weather_condition", weatherCondition);
-                    weatherData.put("humidity", 0);
+                    weatherData.put("humidity", humidity);
                     weatherData.put("windspeed", windSpeed);
-                    System.out.println("OKKKKK");
+                    //System.out.println("OKKKKK");
                     return weatherData;
                 }
             }
