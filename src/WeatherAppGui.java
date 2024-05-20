@@ -124,19 +124,14 @@ public class WeatherAppGui extends JFrame {
                 String weatherCondition = (String) weatherData.get("weather_condition");
 
                 // depending on the condition, we will update the weather image that corresponds with the condition
-                switch(weatherCondition){
-                    case "Clear":
-                        weatherConditionImage.setIcon(loadImage("src/image/clear.png"));
-                        break;
-                    case "Cloudy":
-                        weatherConditionImage.setIcon(loadImage("src/image/cloudy.png"));
-                        break;
-                    case "Rain":
-                        weatherConditionImage.setIcon(loadImage("src/image/rain.png"));
-                        break;
-                    case "Snow":
-                        weatherConditionImage.setIcon(loadImage("src/image/snow.png"));
-                        break;
+                if (weatherCondition.contains("晴")) {
+                    weatherConditionImage.setIcon(loadImage("src/image/clear.png"));
+                } else if (weatherCondition.contains("多雲")) {
+                    weatherConditionImage.setIcon(loadImage("src/image/cloudy.png"));
+                } else if (weatherCondition.contains("陰")) {
+                    weatherConditionImage.setIcon(loadImage("src/image/rain.png"));
+                } else if (weatherCondition.contains("有雨")) {
+                    weatherConditionImage.setIcon(loadImage("src/image/snow.png"));
                 }
 
                 // update temperature text
@@ -147,7 +142,7 @@ public class WeatherAppGui extends JFrame {
                 weatherConditionDesc.setText(weatherCondition);
 
                 // update humidity text
-                long humidity = (long) weatherData.get("humidity");
+                int humidity = (int) weatherData.get("humidity");
                 humidityText.setText("<html><b>Humidity</b> " + humidity + "%</html>");
 
                 // update windspeed text
