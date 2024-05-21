@@ -72,6 +72,8 @@ public class WeatherApp {
                         double airTemperature = (double) weather.get("AirTemperature");
                         // build the weather json data object that we are going to access in our frontend
                         JSONObject weatherData = new JSONObject();
+                        weatherData.put("county", countyName);
+                        weatherData.put("town", townName);
                         weatherData.put("temperature", airTemperature);
                         weatherData.put("weather_condition", weatherCondition);
                         weatherData.put("humidity", humidity);
@@ -85,7 +87,9 @@ public class WeatherApp {
                 JSONObject station = (JSONObject) stationObj;
                 String stationName = station.get("StationName").toString();
                 if(locationName.substring(0, 2).equals(stationName)) {
-                    System.out.println("OKKKKK");
+                    JSONObject geoInfo = (JSONObject) station.get("GeoInfo");
+                    String countyName = geoInfo.get("CountyName").toString();
+                    String townName = geoInfo.get("TownName").toString();
                     JSONObject weather = (JSONObject) station.get("WeatherElement");
                     String weatherCondition = weather.get("Weather").toString();
                     JSONObject nowHumidity = (JSONObject) weather.get("Now");
@@ -94,6 +98,8 @@ public class WeatherApp {
                     double airTemperature = (double) weather.get("AirTemperature");
                     // build the weather json data object that we are going to access in our frontend
                     JSONObject weatherData = new JSONObject();
+                    weatherData.put("county", countyName);
+                    weatherData.put("town", townName);
                     weatherData.put("temperature", airTemperature);
                     weatherData.put("weather_condition", weatherCondition);
                     weatherData.put("humidity", humidity);
@@ -209,26 +215,8 @@ public class WeatherApp {
         return formattedDateTime;
     }
 
-    // convert the weather code to something more readable
-    private static String convertWeatherCode(long weathercode){
-        String weatherCondition = "";
-        if(weathercode == 0L){
-            // clear
-            weatherCondition = "Clear";
-        }else if(weathercode > 0L && weathercode <= 3L){
-            // cloudy
-            weatherCondition = "Cloudy";
-        }else if((weathercode >= 51L && weathercode <= 67L)
-                    || (weathercode >= 80L && weathercode <= 99L)){
-            // rain
-            weatherCondition = "Rain";
-        }else if(weathercode >= 71L && weathercode <= 77L){
-            // snow
-            weatherCondition = "Snow";
-        }
 
-        return weatherCondition;
-    }
+
 }
 
 

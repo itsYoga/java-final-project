@@ -95,6 +95,23 @@ public class WeatherAppGui extends JFrame {
         windspeedText.setFont(new Font("Dialog", Font.PLAIN, 16));
         add(windspeedText);
 
+        JButton weeklyForecastButton = new JButton("一周天氣預報");
+        weeklyForecastButton.setBounds(100, 100, 200, 50);
+        weeklyForecastButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame forecastFrame = new JFrame("一周天氣預報");
+                forecastFrame.setSize(600, 400);
+                forecastFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                forecastFrame.setLayout(null);
+
+                JLabel label = new JLabel("這是一周天氣預報的視窗。");
+                label.setBounds(50, 50, 300, 30);
+                forecastFrame.add(label);
+                forecastFrame.setVisible(true);}
+        });
+        add(weeklyForecastButton);
+        weeklyForecastButton.setVisible(false);
         // search button
         JButton searchButton = new JButton(loadImage("src/image/search.png"));
 
@@ -108,49 +125,53 @@ public class WeatherAppGui extends JFrame {
                 String userInput = searchTextField.getText();
 
                 // validate input - remove whitespace to ensure non-empty text
-                if(userInput.replaceAll("\\s", "").length() <= 0){
+                if (userInput.replaceAll("\\s", "").length() <= 0) {
                     return;
                 }
 
                 // retrieve weather data
                 weatherData = WeatherApp.getWeatherData(userInput);
+                if (weatherData == null) {
+                    weeklyForecastButton.setVisible(false);
+                    System.out.println("Error!");
+                } else {
+                    weeklyForecastButton.setVisible(true);
+                    // update location text
+                    locationText.setText("Location: " + userInput);
 
-                // update gui
+                    // update weather image
+                    String weatherCondition = (String) weatherData.get("weather_condition");
 
-                // update location text
-                locationText.setText("Location: " + userInput);
+                    // depending on the condition, we will update the weather image that corresponds with the condition
+                    if (weatherCondition.contains("晴")) {
+                        weatherConditionImage.setIcon(loadImage("src/image/clear.png"));
+                    } else if (weatherCondition.contains("多雲")) {
+                        weatherConditionImage.setIcon(loadImage("src/image/cloudy.png"));
+                    } else if (weatherCondition.contains("陰")) {
+                        weatherConditionImage.setIcon(loadImage("src/image/rain.png"));
+                    } else if (weatherCondition.contains("有雨")) {
+                        weatherConditionImage.setIcon(loadImage("src/image/snow.png"));
+                    }
 
-                // update weather image
-                String weatherCondition = (String) weatherData.get("weather_condition");
+                    // update temperature text
+                    double temperature = (double) weatherData.get("temperature");
+                    temperatureText.setText(temperature + " C");
 
-                // depending on the condition, we will update the weather image that corresponds with the condition
-                if (weatherCondition.contains("晴")) {
-                    weatherConditionImage.setIcon(loadImage("src/image/clear.png"));
-                } else if (weatherCondition.contains("多雲")) {
-                    weatherConditionImage.setIcon(loadImage("src/image/cloudy.png"));
-                } else if (weatherCondition.contains("陰")) {
-                    weatherConditionImage.setIcon(loadImage("src/image/rain.png"));
-                } else if (weatherCondition.contains("有雨")) {
-                    weatherConditionImage.setIcon(loadImage("src/image/snow.png"));
+                    // update weather condition text
+                    weatherConditionDesc.setText(weatherCondition);
+
+                    // update humidity text
+                    double humidity = (double) weatherData.get("humidity");
+                    humidityText.setText("<html><b>當日降水量</b> " + humidity + "mm</html>");
+
+                    // update windspeed text
+                    double windspeed = (double) weatherData.get("windspeed");
+                    windspeedText.setText("<html><b>平均風風速</b> " + windspeed + "m/s</html>");
                 }
-
-                // update temperature text
-                double temperature = (double) weatherData.get("temperature");
-                temperatureText.setText(temperature + " C");
-
-                // update weather condition text
-                weatherConditionDesc.setText(weatherCondition);
-
-                // update humidity text
-                double humidity = (double) weatherData.get("humidity");
-                humidityText.setText("<html><b>當日降水量</b> " + humidity + "mm</html>");
-
-                // update windspeed text
-                double windspeed = (double) weatherData.get("windspeed");
-                windspeedText.setText("<html><b>平均風風速</b> " + windspeed + "m/s</html>");
             }
         });
         add(searchButton);
+
     }
 
     // used to create images in our gui components
