@@ -100,15 +100,42 @@ public class WeatherAppGui extends JFrame {
         weeklyForecastButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JSONObject weekWeatherData = WeeklyForecast.getWeatherData((String) weatherData.get("county"), (String) weatherData.get("town"));
                 JFrame forecastFrame = new JFrame("一周天氣預報");
-                forecastFrame.setSize(600, 400);
+                forecastFrame.setSize(1200, 600);
                 forecastFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                forecastFrame.setLayout(null);
+                forecastFrame.setLayout(new GridLayout(1, 7));
+                for (int i = 0; i < 7; i++) {
+                    JPanel panel = new JPanel();
+                    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    panel.setLayout(new BorderLayout());
 
-                JLabel label = new JLabel("這是一周天氣預報的視窗。");
-                label.setBounds(50, 50, 300, 30);
-                forecastFrame.add(label);
+                    JLabel weekdayLabel = new JLabel((String) weekWeatherData.get("week"+i), SwingConstants.CENTER);
+                    weekdayLabel.setBounds(3, 65, 150, 34);
+                    weekdayLabel.setFont(new Font("Dialog", Font.BOLD, 25));
+                    panel.add(weekdayLabel);
+
+                    String weatherConditions = (String) weekWeatherData.get("condition"+i);
+
+                    JLabel imageLabel = new JLabel();
+                    imageLabel.setBounds(35, 115, 150, 150);
+                    SetIcon.setIcon(imageLabel, weatherConditions);
+                    SetIcon.modifyIcon(imageLabel,100,100);
+                    panel.add(imageLabel);
+
+                    JLabel temperatureLabel = new JLabel( weekWeatherData.get("minT"+i)+ "C ~ " + weekWeatherData.get("maxT"+i)+"C", SwingConstants.CENTER);
+                    temperatureLabel.setBounds(20,235,150,100);
+                    temperatureLabel.setFont(new Font("Dialog", Font.PLAIN, 22));
+                    panel.add(temperatureLabel);
+
+                    JLabel weatherLabel = new JLabel("weatherConditions[i]", SwingConstants.CENTER);
+                    panel.add(weatherLabel);
+
+                    forecastFrame.add(panel);
+                }
+
                 forecastFrame.setVisible(true);}
+
         });
         add(weeklyForecastButton);
         weeklyForecastButton.setVisible(false);
@@ -142,16 +169,7 @@ public class WeatherAppGui extends JFrame {
                     // update weather image
                     String weatherCondition = (String) weatherData.get("weather_condition");
 
-                    // depending on the condition, we will update the weather image that corresponds with the condition
-                    if (weatherCondition.contains("晴")) {
-                        weatherConditionImage.setIcon(loadImage("src/image/clear.png"));
-                    } else if (weatherCondition.contains("多雲")) {
-                        weatherConditionImage.setIcon(loadImage("src/image/cloudy.png"));
-                    } else if (weatherCondition.contains("陰")) {
-                        weatherConditionImage.setIcon(loadImage("src/image/rain.png"));
-                    } else if (weatherCondition.contains("有雨")) {
-                        weatherConditionImage.setIcon(loadImage("src/image/snow.png"));
-                    }
+                    SetIcon.setIcon(weatherConditionImage, weatherCondition);
 
                     // update temperature text
                     double temperature = (double) weatherData.get("temperature");

@@ -11,7 +11,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 public class WeeklyForecast {
     private static String[] counties = {
             "宜蘭縣", "桃園市", "新竹縣", "苗栗縣", "彰化縣",
@@ -29,7 +30,7 @@ public class WeeklyForecast {
                 break;
             }
         }
-        String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-0"+urlApiCount+"?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&elementName=PoP12h,WeatherDescription";
+        String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-0"+urlApiCount+"?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&elementName=MinT,MaxT,PoP12h,WeatherDescription";
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -52,11 +53,11 @@ public class WeeklyForecast {
 
                 for (Object locationObj : locations) {
                     JSONObject location = (JSONObject) locationObj;
-                    if ("臺北市".equals(location.get("locationsName"))) {
+                    if (countryName.equals(location.get("locationsName"))) {
                         JSONArray locationArray = (JSONArray) location.get("location");
                         for (Object locObj : locationArray) {
                             JSONObject loc = (JSONObject) locObj;
-                            if ("內湖區".equals(loc.get("locationName"))) {
+                            if (townName.equals(loc.get("locationName"))) {
                                 JSONArray weatherElements = (JSONArray) loc.get("weatherElement");
                                 for (Object weatherElementObj : weatherElements) {
                                     JSONObject weatherElement = (JSONObject) weatherElementObj;
@@ -70,12 +71,22 @@ public class WeeklyForecast {
                                                 String endTime = (String) time.get("endTime");
                                                 JSONObject elementValue = (JSONObject) ((JSONArray) time.get("elementValue")).get(0);
                                                 String description = (String) elementValue.get("value");
+                                                String[] sentences = description.split("。");
 
                                                 if (isCurrentTimeInRange(startTime, endTime,date)) {
                                                     if(getCurrentDayOfWeek(LocalDateTime.now()).equals(getCurrentDayOfWeek(date)))
                                                         weatherData.put("week"+i, "今天");
                                                     else weatherData.put("week"+i, getCurrentDayOfWeek(date));
-                                                    weatherData.put("description"+i, description);
+                                                    weatherData.put("condition"+i, sentences[0]);
+                                                    weatherData.put("humidity"+i, sentences[1]);
+
+                                                    Pattern pattern = Pattern.compile("\\d+");
+                                                    Matcher matcher = pattern.matcher(sentences[2]);
+                                                    while  (matcher.find()) {
+                                                        weatherData.put("minT"+i, matcher.group());
+                                                        if (matcher.find()) weatherData.put("maxT"+i, matcher.group());
+                                                    }
+
 
                                                 }
                                             }
