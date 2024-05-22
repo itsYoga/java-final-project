@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/java-final-project.iml" filepath="$PROJECT_DIR$/java-final-project.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/finalproject.iml" filepath="$PROJECT_DIR$/finalproject.iml" />
+>>>>>>> bc84a4463d6e86e4a238e4a54f43b14a4f8b38c6
+    </modules>
+  </component>
+</project>
