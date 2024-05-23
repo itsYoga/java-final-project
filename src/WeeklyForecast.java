@@ -11,8 +11,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 public class WeeklyForecast {
     private static String[] counties = {
             "宜蘭縣", "桃園市", "新竹縣", "苗栗縣", "彰化縣",
@@ -30,7 +30,7 @@ public class WeeklyForecast {
                 break;
             }
         }
-        String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-0"+urlApiCount+"?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&elementName=MinT,MaxT,PoP12h,WeatherDescription";
+        String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-0"+urlApiCount+"?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&elementName=MinT,MaxT,PoP12h,Wx";
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -61,38 +61,12 @@ public class WeeklyForecast {
                                 JSONArray weatherElements = (JSONArray) loc.get("weatherElement");
                                 for (Object weatherElementObj : weatherElements) {
                                     JSONObject weatherElement = (JSONObject) weatherElementObj;
-                                    if ("WeatherDescription".equals(weatherElement.get("elementName"))) {
-                                        JSONArray times = (JSONArray) weatherElement.get("time");
-                                        LocalDateTime date = LocalDateTime.now();
-                                        for (int i = 0; i < 7; i++){
-                                            for (Object timeObj : times) {
-                                                JSONObject time = (JSONObject) timeObj;
-                                                String startTime = (String) time.get("startTime");
-                                                String endTime = (String) time.get("endTime");
-                                                JSONObject elementValue = (JSONObject) ((JSONArray) time.get("elementValue")).get(0);
-                                                String description = (String) elementValue.get("value");
-                                                String[] sentences = description.split("。");
 
-                                                if (isCurrentTimeInRange(startTime, endTime,date)) {
-                                                    if(getCurrentDayOfWeek(LocalDateTime.now()).equals(getCurrentDayOfWeek(date)))
-                                                        weatherData.put("week"+i, "今天");
-                                                    else weatherData.put("week"+i, getCurrentDayOfWeek(date));
-                                                    weatherData.put("condition"+i, sentences[0]);
-                                                    weatherData.put("humidity"+i, sentences[1]);
+                                    getApiData(weatherElement,"PoP12h");
+                                    getApiData(weatherElement,"Wx");
+                                    getApiData(weatherElement,"MinT");
+                                    getApiData(weatherElement,"MaxT");
 
-                                                    Pattern pattern = Pattern.compile("\\d+");
-                                                    Matcher matcher = pattern.matcher(sentences[2]);
-                                                    while  (matcher.find()) {
-                                                        weatherData.put("minT"+i, matcher.group());
-                                                        if (matcher.find()) weatherData.put("maxT"+i, matcher.group());
-                                                    }
-
-
-                                                }
-                                            }
-                                            date=date.plusDays(1);
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -119,5 +93,32 @@ public class WeeklyForecast {
     private static String getCurrentDayOfWeek(LocalDateTime now) {
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         return dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.CHINESE);
+    }
+
+    private static void getApiData(JSONObject weatherElement, String elementName){
+        if (elementName.equals(weatherElement.get("elementName"))) {
+            JSONArray times = (JSONArray) weatherElement.get("time");
+            LocalDateTime date = LocalDateTime.now();
+            for (int i = 0; i < 7; i++){
+                for (Object timeObj : times) {
+                    JSONObject time = (JSONObject) timeObj;
+                    String startTime = (String) time.get("startTime");
+                    String endTime = (String) time.get("endTime");
+                    JSONObject elementValue = (JSONObject) ((JSONArray) time.get("elementValue")).get(0);
+                    String data = (String) elementValue.get("value");
+
+                    if (isCurrentTimeInRange(startTime, endTime,date)) {
+                        if(getCurrentDayOfWeek(LocalDateTime.now()).equals(getCurrentDayOfWeek(date)))
+                            weatherData.put("week"+i, "今天");
+                        else weatherData.put("week"+i, getCurrentDayOfWeek(date));
+                        weatherData.put(elementName+i, data);
+
+
+
+                    }
+                }
+                date=date.plusDays(1);
+            }
+        }
     }
 }

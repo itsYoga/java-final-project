@@ -102,35 +102,49 @@ public class WeatherAppGui extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 JSONObject weekWeatherData = WeeklyForecast.getWeatherData((String) weatherData.get("county"), (String) weatherData.get("town"));
                 JFrame forecastFrame = new JFrame("一周天氣預報");
-                forecastFrame.setSize(1200, 600);
+                forecastFrame.setSize(1200, 500);
                 forecastFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 forecastFrame.setLayout(new GridLayout(1, 7));
                 for (int i = 0; i < 7; i++) {
                     JPanel panel = new JPanel();
-                    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                   panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                     panel.setLayout(new BorderLayout());
 
-                    JLabel weekdayLabel = new JLabel((String) weekWeatherData.get("week"+i), SwingConstants.CENTER);
+                    JLabel weekdayLabel = new JLabel("<html>" + weekWeatherData.get("week"+i)+ "<br></html>", SwingConstants.CENTER);
                     weekdayLabel.setBounds(3, 65, 150, 34);
                     weekdayLabel.setFont(new Font("Dialog", Font.BOLD, 25));
                     panel.add(weekdayLabel);
 
-                    String weatherConditions = (String) weekWeatherData.get("condition"+i);
-
+                    String weatherConditions = (String) weekWeatherData.get("Wx"+i);
                     JLabel imageLabel = new JLabel();
                     imageLabel.setBounds(35, 115, 150, 150);
                     SetIcon.setIcon(imageLabel, weatherConditions);
                     SetIcon.modifyIcon(imageLabel,100,100);
                     panel.add(imageLabel);
 
-                    JLabel temperatureLabel = new JLabel( weekWeatherData.get("minT"+i)+ "C ~ " + weekWeatherData.get("maxT"+i)+"C", SwingConstants.CENTER);
+                    JLabel temperatureLabel = new JLabel( "<html>"+weekWeatherData.get("MinT"+i)+ "C ~ " + weekWeatherData.get("MaxT"+i)+"C"+ "<br></html>", SwingConstants.CENTER);
                     temperatureLabel.setBounds(20,235,150,100);
                     temperatureLabel.setFont(new Font("Dialog", Font.PLAIN, 22));
-                    panel.add(temperatureLabel);
+                    panel.add(temperatureLabel, BorderLayout.SOUTH);
 
-                    JLabel weatherLabel = new JLabel("weatherConditions[i]", SwingConstants.CENTER);
-                    panel.add(weatherLabel);
+                    JLabel conditionsLabel = new JLabel( "<html>" + weatherConditions + "<br></html>", SwingConstants.CENTER);
+                    conditionsLabel.setBounds(0,285,180,100);
+                    conditionsLabel.setFont(new Font("Dialog", Font.BOLD, 22));
+                    panel.add(conditionsLabel, BorderLayout.SOUTH);
 
+                    JPanel panel1 = new JPanel();
+                    panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
+                    JLabel imageRain = new JLabel();
+                    imageRain.setIcon(loadImage("src/image/humidity.png"));
+                    SetIcon.modifyIcon(imageRain,60,60);
+                    imageRain.setBounds(0,375,60,60);
+                    panel1.add(imageRain);
+
+                    JLabel rainLabel = new JLabel("<html>降雨機率:<br>" +weekWeatherData.get("PoP12h"+i)+ "%</html>");
+                    rainLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
+                    panel1.add(rainLabel);
+
+                    panel.add(panel1, BorderLayout.SOUTH);
                     forecastFrame.add(panel);
                 }
 
