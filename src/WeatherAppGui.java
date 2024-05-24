@@ -1,5 +1,6 @@
 import org.json.simple.JSONObject;
-
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -7,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class WeatherAppGui extends JFrame {
@@ -165,11 +167,29 @@ public class WeatherAppGui extends JFrame {
                 // get location from user
                 String userInput = searchTextField.getText();
 
-                // validate input - remove whitespace to ensure non-empty text
                 if (userInput.replaceAll("\\s", "").length() <= 0) {
                     return;
                 }
-
+                if (userInput.length() >= 4 && (userInput.endsWith("大學") || userInput.endsWith("學院"))){
+                    if (userInput.contains("台")) {
+                        userInput = userInput.replace("台", "臺");
+                    }
+                    JSONObject collegeData = new JSONObject();
+                    JSONParser parser = new JSONParser();
+                    try (FileReader reader = new FileReader("college.json")) {
+                        collegeData=(JSONObject) parser.parse(reader);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        collegeData= null;
+                    }finally {
+                        JSONObject collegeInfo = (JSONObject) collegeData.get(userInput);
+                        if (collegeInfo != null) {
+                            userInput = (String) collegeInfo.get("地區");
+                        }else{
+                            userInput = null;
+                        }
+                    }
+                }
                 // retrieve weather data
                 weatherData = WeatherApp.getWeatherData(userInput);
                 if (weatherData == null) {

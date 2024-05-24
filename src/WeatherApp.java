@@ -55,14 +55,14 @@ public class WeatherApp {
             // Get the 'Station' array from the 'records' object
             JSONArray stations = (JSONArray) records.get("Station");
 
-            if (locationName.length()>=6) {
+            if (locationName.length()>=5) {
                 for (Object stationObj : stations) {
                     JSONObject station = (JSONObject) stationObj;
                     JSONObject geoInfo = (JSONObject) station.get("GeoInfo");
                     String countyName = geoInfo.get("CountyName").toString();
                     String townName = geoInfo.get("TownName").toString();
 
-                    if (locationName.substring(0, 3).equals(countyName) && locationName.substring(locationName.length() - 3).equals(townName)) {
+                    if (locationName.substring(0, 3).equals(countyName) && locationName.substring(3,locationName.length()).equals(townName)) {
                         //String stationName = station.get("locationName").toString();
                         JSONObject weather = (JSONObject) station.get("WeatherElement");
                         String weatherCondition = weather.get("Weather").toString();
@@ -104,7 +104,6 @@ public class WeatherApp {
                     weatherData.put("weather_condition", weatherCondition);
                     weatherData.put("humidity", humidity);
                     weatherData.put("windspeed", windSpeed);
-                    //System.out.println("OKKKKK");
                     return weatherData;
                 }
             }
@@ -116,56 +115,7 @@ public class WeatherApp {
         return null;
     }
 
-    // retrieves geographic coordinates for given location name
-    public static JSONArray getLocationData(String locationName){
-        // replace any whitespace in location name to + to adhere to API's request format
-        locationName = locationName.replaceAll(" ", "+");
 
-        // build API url with location parameter
-        String urlString = "https://geocoding-api.open-meteo.com/v1/search?name=" +
-                locationName + "&count=10&language=en&format=json";
-
-        try{
-            // call api and get a response
-            HttpURLConnection conn = fetchApiResponse(urlString);
-
-            // check response status
-            // 200 means successful connection
-            if(conn.getResponseCode() != 200){
-                System.out.println("Error: Could not connect to API");
-                return null;
-            }else{
-                // store the API results
-                StringBuilder resultJson = new StringBuilder();
-                Scanner scanner = new Scanner(conn.getInputStream());
-
-                // read and store the resulting json data into our string builder
-                while(scanner.hasNext()){
-                    resultJson.append(scanner.nextLine());
-                }
-
-                // close scanner
-                scanner.close();
-
-                // close url connection
-                conn.disconnect();
-
-                // parse the JSON string into a JSON obj
-                JSONParser parser = new JSONParser();
-                JSONObject resultsJsonObj = (JSONObject) parser.parse(String.valueOf(resultJson));
-
-                // get the list of location data the API gtenerated from the lcoation name
-                JSONArray locationData = (JSONArray) resultsJsonObj.get("results");
-                return locationData;
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        // couldn't find location
-        return null;
-    }
 
     private static HttpURLConnection fetchApiResponse(String urlString){
         try{
@@ -187,33 +137,6 @@ public class WeatherApp {
         return null;
     }
 
-    private static int findIndexOfCurrentTime(JSONArray timeList){
-        String currentTime = getCurrentTime();
-
-        // iterate through the time list and see which one matches our current time
-        for(int i = 0; i < timeList.size(); i++){
-            String time = (String) timeList.get(i);
-            if(time.equalsIgnoreCase(currentTime)){
-                // return the index
-                return i;
-            }
-        }
-
-        return 0;
-    }
-
-    private static String getCurrentTime(){
-        // get current date and time
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        // format date to be 2023-09-02T00:00 (this is how is is read in the API)
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH':00'");
-
-        // format and print the current date and time
-        String formattedDateTime = currentDateTime.format(formatter);
-
-        return formattedDateTime;
-    }
 
 
 
