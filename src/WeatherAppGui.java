@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class WeatherAppGui extends JFrame {
     private JSONObject weatherData;
-
+    private String cctvurl;
     public WeatherAppGui(){
         // setup our gui and add a title
         super("Weather App");
@@ -98,7 +98,7 @@ public class WeatherAppGui extends JFrame {
         add(windspeedText);
 
         JButton weeklyForecastButton = new JButton("一周天氣預報");
-        weeklyForecastButton.setBounds(100, 100, 200, 50);
+        weeklyForecastButton.setBounds(20, 100, 180, 50);
         weeklyForecastButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -155,6 +155,20 @@ public class WeatherAppGui extends JFrame {
         });
         add(weeklyForecastButton);
         weeklyForecastButton.setVisible(false);
+
+
+        JButton viewLiveImageButton = new JButton("觀看即時影像");
+        viewLiveImageButton.setBounds(250, 100, 180, 50); // Adjust position and size as needed
+        viewLiveImageButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        viewLiveImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MjpegStreamPlayer.play(cctvurl);
+                System.out.println("Viewing live image...");
+            }
+        });
+        add(viewLiveImageButton);
+        viewLiveImageButton.setVisible(false);
         // search button
         JButton searchButton = new JButton(loadImage("src/image/search.png"));
 
@@ -185,6 +199,13 @@ public class WeatherAppGui extends JFrame {
                         JSONObject collegeInfo = (JSONObject) collegeData.get(userInput);
                         if (collegeInfo != null) {
                             userInput = (String) collegeInfo.get("地區");
+                            if(collegeInfo.get("cctv")!=null){
+                                viewLiveImageButton.setVisible(true);
+                                cctvurl=(String) collegeInfo.get("cctv");
+                            }else{
+                                viewLiveImageButton.setVisible(false);
+                                cctvurl=null;
+                            }
                         }else{
                             userInput = null;
                         }
