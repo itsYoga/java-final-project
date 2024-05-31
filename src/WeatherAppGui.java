@@ -244,6 +244,21 @@ public class WeatherAppGui extends JFrame {
             }
         });
         add(searchButton);
+        ImageIcon icon = new ImageIcon(loadImage("src/image/sound.png").getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH));
+        JButton soundButton = new JButton(icon);
+
+        // change the cursor to a hand cursor when hovering over this button
+        soundButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        soundButton.setBounds(375, 63, 47, 45);
+
+        soundButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (weatherData!=null){
+                TextToSpeech.tts(weatherData);}
+            }
+        });
+        add(soundButton);
 
     }
 
