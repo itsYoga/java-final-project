@@ -5,11 +5,13 @@ public class SetIcon {
     public static void setIcon(JLabel icon, String weatherCondition) {
         if (weatherCondition.contains("晴")) {
             icon.setIcon(loadImage("src/image/clear.png"));
+        } else if (weatherCondition.contains("雨")) {
+            icon.setIcon(loadImage("src/image/rain.png"));
         } else if (weatherCondition.contains("多雲")) {
             icon.setIcon(loadImage("src/image/cloudy.png"));
         } else if (weatherCondition.contains("陰")) {
             icon.setIcon(loadImage("src/image/rain.png"));
-        } else if (weatherCondition.contains("有雨")) {
+        } else if (weatherCondition.contains("雪")) {
             icon.setIcon(loadImage("src/image/snow.png"));
         }
     }

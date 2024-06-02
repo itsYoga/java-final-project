@@ -243,6 +243,76 @@ public class WeatherAppGui extends JFrame {
                 }
             }
         });
+        //////////////////////////same as searchButton to practice "enter" function///////////////////////////////////////////
+        searchTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // get location from user
+                String userInput = searchTextField.getText();
+
+                if (userInput.replaceAll("\\s", "").length() <= 0) {
+                    return;
+                }
+                if (userInput.length() >= 4 && (userInput.endsWith("大學") || userInput.endsWith("學院"))){
+                    if (userInput.contains("台")) {
+                        userInput = userInput.replace("台", "臺");
+                    }
+                    JSONObject collegeData = new JSONObject();
+                    JSONParser parser = new JSONParser();
+                    try (FileReader reader = new FileReader("college.json")) {
+                        collegeData=(JSONObject) parser.parse(reader);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        collegeData= null;
+                    }finally {
+                        JSONObject collegeInfo = (JSONObject) collegeData.get(userInput);
+                        if (collegeInfo != null) {
+                            userInput = (String) collegeInfo.get("地區");
+                            if(collegeInfo.get("cctv")!=null){
+                                viewLiveImageButton.setVisible(true);
+                                cctvurl=(String) collegeInfo.get("cctv");
+                            }else{
+                                viewLiveImageButton.setVisible(false);
+                                cctvurl=null;
+                            }
+                        }else{
+                            userInput = null;
+                        }
+                    }
+                }
+                // retrieve weather data
+                weatherData = WeatherApp.getWeatherData(userInput);
+                if (weatherData == null) {
+                    weeklyForecastButton.setVisible(false);
+                    System.out.println("Error!");
+                } else {
+                    weeklyForecastButton.setVisible(true);
+                    // update location text
+                    locationText.setText("Location: " + userInput);
+
+                    // update weather image
+                    String weatherCondition = (String) weatherData.get("weather_condition");
+
+                    SetIcon.setIcon(weatherConditionImage, weatherCondition);
+
+                    // update temperature text
+                    double temperature = (double) weatherData.get("temperature");
+                    temperatureText.setText(temperature + " C");
+
+                    // update weather condition text
+                    weatherConditionDesc.setText(weatherCondition);
+
+                    // update humidity text
+                    double humidity = (double) weatherData.get("humidity");
+                    humidityText.setText("<html><b>當日降水量</b> " + humidity + "mm</html>");
+
+                    // update windspeed text
+                    double windspeed = (double) weatherData.get("windspeed");
+                    windspeedText.setText("<html><b>平均風風速</b> " + windspeed + "m/s</html>");
+                }
+            }
+        });
+        //////////////////////////repeat as above to practice "enter" function///////////////////////////////////////////
         add(searchButton);
         ImageIcon icon = new ImageIcon(loadImage("src/image/sound.png").getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH));
         JButton soundButton = new JButton(icon);
