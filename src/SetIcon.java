@@ -7,11 +7,9 @@ public class SetIcon {
             icon.setIcon(loadImage("src/image/clear.png"));
         } else if (weatherCondition.contains("雨")) {
             icon.setIcon(loadImage("src/image/rain.png"));
-        } else if (weatherCondition.contains("多雲")) {
+        } else if (weatherCondition.contains("多雲") || weatherCondition.contains("陰")) {
             icon.setIcon(loadImage("src/image/cloudy.png"));
-        } else if (weatherCondition.contains("陰")) {
-            icon.setIcon(loadImage("src/image/rain.png"));
-        } else if (weatherCondition.contains("雪")) {
+        } else if (weatherCondition.contains("雪")) {//useless haha
             icon.setIcon(loadImage("src/image/snow.png"));
         }
     }
