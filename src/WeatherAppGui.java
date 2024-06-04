@@ -63,7 +63,7 @@ public class WeatherAppGui extends JFrame {
         add(weatherConditionImage);
 
         // temperature text
-        JLabel temperatureText = new JLabel("10 C");
+        JLabel temperatureText = new JLabel("weather app");
         temperatureText.setBounds(0, 350, 450, 54);
         temperatureText.setFont(new Font("Dialog", Font.BOLD, 48));
 
@@ -72,7 +72,7 @@ public class WeatherAppGui extends JFrame {
         add(temperatureText);
 
         // weather condition description
-        JLabel weatherConditionDesc = new JLabel("Cloudy");
+        JLabel weatherConditionDesc = new JLabel("請搜尋地區");
         weatherConditionDesc.setBounds(0, 405, 450, 36);
         weatherConditionDesc.setFont(new Font("Dialog", Font.PLAIN, 32));
         weatherConditionDesc.setHorizontalAlignment(SwingConstants.CENTER);
@@ -84,7 +84,7 @@ public class WeatherAppGui extends JFrame {
         add(humidityImage);
 
         // humidity text
-        JLabel humidityText = new JLabel("<html><b>Humidity</b> 100%</html>");
+        JLabel humidityText = new JLabel("<html><b>降雨量</b> mm</html>");
         humidityText.setBounds(90, 500, 85, 55);
         humidityText.setFont(new Font("Dialog", Font.PLAIN, 16));
         add(humidityText);
@@ -95,7 +95,7 @@ public class WeatherAppGui extends JFrame {
         add(windspeedImage);
 
         // windspeed text
-        JLabel windspeedText = new JLabel("<html><b>Windspeed</b> 15km/h</html>");
+        JLabel windspeedText = new JLabel("<html><b>風速</b> m/s</html>");
         windspeedText.setBounds(310, 500, 85, 55);
         windspeedText.setFont(new Font("Dialog", Font.PLAIN, 16));
         add(windspeedText);
@@ -145,7 +145,10 @@ public class WeatherAppGui extends JFrame {
                     imageRain.setBounds(0,375,60,60);
                     panel1.add(imageRain);
 
-                    JLabel rainLabel = new JLabel("<html>降雨機率:<br>" +weekWeatherData.get("PoP12h"+i)+ "%</html>");
+                    String pop=(String) weekWeatherData.get("PoP12h"+i);
+                    if (pop.equals(" ")) pop="未觀測";
+                    else pop=pop+"%";
+                    JLabel rainLabel = new JLabel("<html>降雨機率:<br>" +pop+ "</html>");
                     rainLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
                     panel1.add(rainLabel);
 
