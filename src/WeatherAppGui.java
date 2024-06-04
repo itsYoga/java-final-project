@@ -85,13 +85,13 @@ public class WeatherAppGui extends JFrame {
 
         // humidity text
         JLabel humidityText = new JLabel("<html><b>降雨量</b> mm</html>");
-        humidityText.setBounds(90, 500, 85, 55);
+        humidityText.setBounds(90, 500, 95, 65);
         humidityText.setFont(new Font("Dialog", Font.PLAIN, 16));
         add(humidityText);
 
         // windspeed image
         JLabel windspeedImage = new JLabel(loadImage("src/image/windspeed.png"));
-        windspeedImage.setBounds(220, 500, 74, 66);
+        windspeedImage.setBounds(220, 500, 105, 66);
         add(windspeedImage);
 
         // windspeed text
@@ -234,18 +234,28 @@ public class WeatherAppGui extends JFrame {
 
                     // update temperature text
                     double temperature = (double) weatherData.get("temperature");
-                    temperatureText.setText(temperature + " C");
+                    if (temperature < -900)
+                        temperatureText.setText("測站異常");
+                    else
+                        temperatureText.setText(temperature + " C");
 
                     // update weather condition text
                     weatherConditionDesc.setText(weatherCondition);
 
                     // update humidity text
                     double humidity = (double) weatherData.get("humidity");
-                    humidityText.setText("<html><b>當日降水量</b> " + humidity + "mm</html>");
+                    if (humidity < -900)
+                        humidityText.setText("<html><b>當日降水量</b> 數值異常</html>");
+                    else
+                        humidityText.setText("<html><b>當日降水量</b> " + humidity + "mm</html>");
+
 
                     // update windspeed text
                     double windspeed = (double) weatherData.get("windspeed");
-                    windspeedText.setText("<html><b>平均風風速</b> " + windspeed + "m/s</html>");
+                    if (windspeed < -900)
+                        windspeedText.setText("<html><b>平均風風速</b>  數值異常</html>");
+                    else
+                        windspeedText.setText("<html><b>平均風風速</b> " + windspeed + "m/s</html>");
                 }
             }
         };
