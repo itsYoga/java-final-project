@@ -62,7 +62,7 @@ public class WeatherApp {
                     String countyName = geoInfo.get("CountyName").toString();
                     String townName = geoInfo.get("TownName").toString();
 
-                    if (locationName.substring(0, 3).equals(countyName) && locationName.substring(3,locationName.length()).equals(townName)) {
+                    if (locationName.substring(0, 3).equals(countyName) && locationName.substring(3, locationName.length()).equals(townName)) {
                         //String stationName = station.get("locationName").toString();
                         JSONObject weather = (JSONObject) station.get("WeatherElement");
                         String weatherCondition = weather.get("Weather").toString();
@@ -78,11 +78,10 @@ public class WeatherApp {
                         weatherData.put("weather_condition", weatherCondition);
                         weatherData.put("humidity", humidity);
                         weatherData.put("windspeed", windSpeed);
-                        //System.out.println("OKKKKK");
                         return weatherData;
                     }
                 }
-            }
+            }else{
             for (Object stationObj : stations){
                 JSONObject station = (JSONObject) stationObj;
                 String stationName = station.get("StationName").toString();
@@ -106,6 +105,7 @@ public class WeatherApp {
                     weatherData.put("windspeed", windSpeed);
                     return weatherData;
                 }
+            }
             }
         }catch(Exception e){
             e.printStackTrace();

@@ -188,6 +188,7 @@ public class WeatherAppGui extends JFrame {
                 String userInput = searchTextField.getText();
 
                 if (userInput.replaceAll("\\s", "").length() <= 0) {
+                    JOptionPane.showMessageDialog(null, "搜尋資料不得為空", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 if (userInput.length() >= 4 && (userInput.endsWith("大學") || userInput.endsWith("學院"))){
@@ -219,9 +220,11 @@ public class WeatherAppGui extends JFrame {
                 }
                 // retrieve weather data
                 weatherData = WeatherApp.getWeatherData(userInput);
+
                 if (weatherData == null) {
                     weeklyForecastButton.setVisible(false);
-                    System.out.println("Error!");
+                    JOptionPane.showMessageDialog(null, "搜尋資料有誤，請重新輸入", "Error", JOptionPane.ERROR_MESSAGE);
+
                 } else {
                     weeklyForecastButton.setVisible(true);
                     // update location text
