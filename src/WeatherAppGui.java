@@ -217,6 +217,7 @@ public class WeatherAppGui extends JFrame {
         ActionListener searchActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+//                viewLiveImageButton.setVisible(false);
                 // get location from user
                 String userInput = searchTextField.getText();
 
