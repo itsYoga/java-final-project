@@ -17,14 +17,15 @@ import java.util.Scanner;
 public class WeatherApp {
     // fetch weather data for given location
     public static JSONObject getWeatherData(String locationName){
-        if (locationName.contains("台")) {
-            locationName = locationName.replace("台", "臺");
-        }
+
 
         // build API request URL with location coordinates
         String urlString = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWA-7B91DB1C-EBA8-49D2-B113-4560F2A115ED&WeatherElement=Weather,Now,WindSpeed,AirTemperature&GeoInfo=CountyName,TownName";
 
         try{
+            if (locationName.contains("台")) {
+                locationName = locationName.replace("台", "臺");
+            }
             // call api and get response
             HttpURLConnection conn = fetchApiResponse(urlString);
 

@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -12,24 +13,25 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 public class InfoReadWriter {
     private static Formatter output;
-    private String fileName;
+    private static String fileName;
     private static List<String> lines;
 
     public static void start(int subCurrentIndex, JTextField searchTextField) {
-       loadFile("subscribe.txt");
-        if (!lines.isEmpty()) {
-            subCurrentIndex = 0;
-            searchTextField.setText(lines.get(subCurrentIndex));
-        }
+       fileName="subscribe.txt";
     }
 
-    public void addInfo(String Name) {
+    public static void addInfo(String Name) {
         openFile();
         addRecord(Name);
         closeFile();
     }
+    public static void removeInfo(String Name) {
+        openFile();
+        removeRecord(Name);;
+        closeFile();
+    }
 
-    public void openFile() {
+    public static void openFile() {
         try {
             FileWriter fw = new FileWriter(fileName, true);
             output = new Formatter(fw);
@@ -45,21 +47,68 @@ public class InfoReadWriter {
         }
     }
 
-    // add records to file
-    public void addRecord(String Name) {
+    public static boolean checkInfo(String name) {
         try {
-            // output new record to file; assumes valid input
-            FileWriter fw = new FileWriter(new File(fileName), true);
-            fw.write(String.format("%s\n", Name));
-            fw.close();
-        } catch (FormatterClosedException formatterClosedException) {
-            System.err.println("Error writing to file. Terminating.");
-        }catch (IOException e){
-            System.err.println("Error writing to file. Terminating.");
+            Set<String> records = new HashSet<>();
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                records.add(line.trim());
+            }
+            reader.close();
+            return records.contains(name);
+        } catch (IOException e) {
+            System.err.println("Error reading file. Terminating.");
+            e.printStackTrace();
+            return false;
         }
     }
 
-    // close file
+    // Add record to file
+    public static void addRecord(String name) {
+        try {
+            if (checkInfo(name)) {
+                JOptionPane.showMessageDialog(null, "已在訂閱清單，無法再次加入", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            FileWriter fw = new FileWriter(new File(fileName), true);
+            fw.write(String.format("%s%n", name));
+            fw.close();
+            JOptionPane.showMessageDialog(null, "成功訂閱", "success", JOptionPane.PLAIN_MESSAGE);
+        } catch (IOException e) {
+            System.err.println("Error reading or writing to file. Terminating.");
+            e.printStackTrace();
+        }
+    }
+
+    // Remove record from file
+    public static void removeRecord(String name) {
+        try {
+            List<String> records = new ArrayList<>();
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().equals(name)) {
+                    records.add(line);
+                }
+            }
+            reader.close();
+
+            FileWriter fw = new FileWriter(fileName);
+            for (String record : records) {
+                fw.write(String.format("%s%n", record));
+            }
+            fw.close();
+
+            JOptionPane.showMessageDialog(null, "成功取消訂閱", "success", JOptionPane.PLAIN_MESSAGE);
+        } catch (IOException e) {
+            System.err.println("Error reading or writing to file. Terminating.");
+            e.printStackTrace();
+        }
+    }
+
+
     public static void closeFile() {
         if (output != null)
             output.close();
@@ -76,17 +125,21 @@ public class InfoReadWriter {
         }
     }
 
-    public static void showPreviousLine(int currentIndex, JTextField searchTextField) {
-        if (currentIndex > 0) {
-            currentIndex--;
+    public static boolean showPreviousLine(int currentIndex, JTextField searchTextField) {
+        if (currentIndex >= 0) {
+            loadFile("subscribe.txt");
             searchTextField.setText(lines.get(currentIndex));
-        }
+            return true;
+        }else return false;
+
     }
 
-    public static void showNextLine(int currentIndex, JTextField searchTextField) {
-        if (currentIndex < lines.size() - 1) {
-            currentIndex++;
+    public static boolean showNextLine(int currentIndex, JTextField searchTextField) {
+        if (currentIndex <= lines.size() - 1) {
+            loadFile("subscribe.txt");
             searchTextField.setText(lines.get(currentIndex));
-        }
+            return true;
+        }else return false;
+
     }
 }

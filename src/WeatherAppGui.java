@@ -16,7 +16,7 @@ import java.io.IOException;
 public class WeatherAppGui extends JFrame {
     private JSONObject weatherData;
     private String cctvurl;
-    private  int subCurrentIndex = -1;
+    private  int subCurrentIndex = 0;
     TrayIcon i;
     public WeatherAppGui(){
 
@@ -47,13 +47,22 @@ public class WeatherAppGui extends JFrame {
         add(searchTextField);
 
         InfoReadWriter.start(subCurrentIndex, searchTextField);
+
+        searchTextField.setText("海洋大學");
+
         searchTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    InfoReadWriter.showPreviousLine(subCurrentIndex, searchTextField);
+                    subCurrentIndex--;
+                    if(!InfoReadWriter.showPreviousLine(subCurrentIndex, searchTextField)) {
+                        subCurrentIndex++;
+                    };
                 } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    InfoReadWriter.showNextLine(subCurrentIndex, searchTextField);
+                    subCurrentIndex++;
+                    if(!InfoReadWriter.showNextLine(subCurrentIndex, searchTextField)){
+                        subCurrentIndex--;
+                    }
                 }
             }
         });
@@ -174,6 +183,31 @@ public class WeatherAppGui extends JFrame {
         });
         add(viewLiveImageButton);
         viewLiveImageButton.setVisible(false);
+        JButton unsubscribeButton = new JButton("取消訂閱");
+        unsubscribeButton.setBounds(325, 400, 100, 50); // Adjust position and size as needed
+        unsubscribeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        unsubscribeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InfoReadWriter.removeInfo(searchTextField.getText());
+            }
+        });
+        JButton subscribeButton = new JButton("訂閱");
+        subscribeButton.setBounds(10, 400, 100, 50); // Adjust position and size as needed
+        subscribeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        subscribeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InfoReadWriter.addInfo(searchTextField.getText());
+                unsubscribeButton.setVisible(true);
+            }
+        });
+        add(subscribeButton);
+        subscribeButton.setVisible(false);
+
+
+        add(unsubscribeButton);
+        unsubscribeButton.setVisible(false);
         // search button
         JButton searchButton = new JButton(loadImage("src/image/search.png"));
 
@@ -222,11 +256,16 @@ public class WeatherAppGui extends JFrame {
 
                 if (weatherData == null) {
                     weeklyForecastButton.setVisible(false);
+                    subscribeButton.setVisible(false);
+                    unsubscribeButton.setVisible(false);
+                    viewLiveImageButton.setVisible(false);
                     JOptionPane.showMessageDialog(null, "搜尋資料有誤，請重新輸入", "Error", JOptionPane.ERROR_MESSAGE);
 
                 } else {
+                    if(InfoReadWriter.checkInfo(searchTextField.getText())) unsubscribeButton.setVisible(true);
+                    else unsubscribeButton.setVisible(false);
                     weeklyForecastButton.setVisible(true);
-                    // update location text
+                    subscribeButton.setVisible(true);
                     locationText.setText("Location: " + userInput);
 
                     // update weather image
@@ -236,7 +275,7 @@ public class WeatherAppGui extends JFrame {
 
                     // update temperature text
                     double temperature = (double) weatherData.get("temperature");
-                    if (temperature < -900)
+                    if (temperature < -90)
                         temperatureText.setText("測站異常");
                     else
                         temperatureText.setText(temperature + " C");
@@ -246,7 +285,7 @@ public class WeatherAppGui extends JFrame {
 
                     // update humidity text
                     double humidity = (double) weatherData.get("humidity");
-                    if (humidity < -900)
+                    if (humidity < -90)
                         humidityText.setText("<html><b>當日降水量</b> 數值異常</html>");
                     else
                         humidityText.setText("<html><b>當日降水量</b> " + humidity + "mm</html>");
@@ -254,7 +293,7 @@ public class WeatherAppGui extends JFrame {
 
                     // update windspeed text
                     double windspeed = (double) weatherData.get("windspeed");
-                    if (windspeed < -900)
+                    if (windspeed < -90)
                         windspeedText.setText("<html><b>平均風速</b>  數值異常</html>");
                     else
                         windspeedText.setText("<html><b>平均風速</b> " + windspeed + "m/s</html>");
