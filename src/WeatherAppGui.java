@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
@@ -14,24 +16,20 @@ import java.io.IOException;
 public class WeatherAppGui extends JFrame {
     private JSONObject weatherData;
     private String cctvurl;
+    private  int subCurrentIndex = -1;
     TrayIcon i;
     public WeatherAppGui(){
-        // setup our gui and add a title
+
         super("Weather App");
 
-        // configure gui to end the program's process once it has been closed
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        // set the size of our gui (in pixels)
         setSize(450, 650);
 
-        // load our gui at the center of the screen
         setLocationRelativeTo(null);
 
-        // make our layout manager null to manually position our components within the gui
         setLayout(null);
 
-        // prevent any resize of our gui
         setResizable(false);
 
         addGuiComponents();
@@ -40,16 +38,25 @@ public class WeatherAppGui extends JFrame {
     }
 
     private void addGuiComponents(){
-        // search field
         JTextField searchTextField = new JTextField();
 
-        // set the location and size of our component
         searchTextField.setBounds(15, 15, 351, 45);
 
-        // change the font style and size
         searchTextField.setFont(new Font("Dialog", Font.PLAIN, 24));
 
         add(searchTextField);
+
+        InfoReadWriter.start(subCurrentIndex, searchTextField);
+        searchTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    InfoReadWriter.showPreviousLine(subCurrentIndex, searchTextField);
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    InfoReadWriter.showNextLine(subCurrentIndex, searchTextField);
+                }
+            }
+        });
 
         // location text
         JLabel locationText = new JLabel("Location: ");
@@ -57,44 +64,36 @@ public class WeatherAppGui extends JFrame {
         locationText.setFont(new Font("Dialog", Font.PLAIN, 20));
         add(locationText);
 
-        // weather image
         JLabel weatherConditionImage = new JLabel(loadImage("src/image/cloudy.png"));
         weatherConditionImage.setBounds(0, 125, 450, 217);
         add(weatherConditionImage);
 
-        // temperature text
         JLabel temperatureText = new JLabel("weather app");
         temperatureText.setBounds(0, 350, 450, 54);
         temperatureText.setFont(new Font("Dialog", Font.BOLD, 48));
 
-        // center the text
         temperatureText.setHorizontalAlignment(SwingConstants.CENTER);
         add(temperatureText);
 
-        // weather condition description
         JLabel weatherConditionDesc = new JLabel("請搜尋地區");
         weatherConditionDesc.setBounds(0, 405, 450, 36);
         weatherConditionDesc.setFont(new Font("Dialog", Font.PLAIN, 32));
         weatherConditionDesc.setHorizontalAlignment(SwingConstants.CENTER);
         add(weatherConditionDesc);
 
-        // humidity image
         JLabel humidityImage = new JLabel(loadImage("src/image/humidity.png"));
         humidityImage.setBounds(15, 500, 74, 66);
         add(humidityImage);
 
-        // humidity text
         JLabel humidityText = new JLabel("<html><b>降雨量</b> mm</html>");
         humidityText.setBounds(90, 500, 95, 65);
         humidityText.setFont(new Font("Dialog", Font.PLAIN, 16));
         add(humidityText);
 
-        // windspeed image
         JLabel windspeedImage = new JLabel(loadImage("src/image/windspeed.png"));
         windspeedImage.setBounds(220, 500, 105, 66);
         add(windspeedImage);
 
-        // windspeed text
         JLabel windspeedText = new JLabel("<html><b>風速</b> m/s</html>");
         windspeedText.setBounds(310, 500, 85, 55);
         windspeedText.setFont(new Font("Dialog", Font.PLAIN, 16));
