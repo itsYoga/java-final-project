@@ -126,8 +126,8 @@ public class InfoReadWriter {
     }
 
     public static boolean showPreviousLine(int currentIndex, JTextField searchTextField) {
+        loadFile("subscribe.txt");
         if (currentIndex >= 0) {
-            loadFile("subscribe.txt");
             searchTextField.setText(lines.get(currentIndex));
             return true;
         }else return false;
@@ -135,8 +135,8 @@ public class InfoReadWriter {
     }
 
     public static boolean showNextLine(int currentIndex, JTextField searchTextField) {
+        loadFile("subscribe.txt");
         if (currentIndex <= lines.size() - 1) {
-            loadFile("subscribe.txt");
             searchTextField.setText(lines.get(currentIndex));
             return true;
         }else return false;
