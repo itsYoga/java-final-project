@@ -256,9 +256,9 @@ public class WeatherAppGui extends JFrame {
                     // update windspeed text
                     double windspeed = (double) weatherData.get("windspeed");
                     if (windspeed < -900)
-                        windspeedText.setText("<html><b>平均風風速</b>  數值異常</html>");
+                        windspeedText.setText("<html><b>平均風速</b>  數值異常</html>");
                     else
-                        windspeedText.setText("<html><b>平均風風速</b> " + windspeed + "m/s</html>");
+                        windspeedText.setText("<html><b>平均風速</b> " + windspeed + "m/s</html>");
                 }
             }
         };
