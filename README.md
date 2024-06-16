@@ -1,7 +1,7 @@
 # Weather App
 (1)專案安裝及執行之步驟 :
 原先使用jar資料夾執行java -jar finalproject.jar，然而我們測試後打包完成的jar無法辨識utf-8資料，甚至無法連接resource與網路上opendata
-還是強烈建議使用原始碼檔案，利用intellij編譯執行才能使用，經過測試可能resource jar可能無法讀到，有附上備用lib能重新安裝
+還是強烈建議使用原始碼檔案，利用intellij編譯執行src/AppLauncher才能使用，經過測試可能resource jar可能無法讀到，有附上備用lib能重新安裝
 
 
 (2)demo後新增或修改的地方: 
